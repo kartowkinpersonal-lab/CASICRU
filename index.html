@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CasinoRu — Neon Mini Casino</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">CasinoRu</div>
+    <div class="controls-right">
+      <button id="musicToggle" class="small">🔈 Музыка</button>
+      <input id="username" placeholder="Введите ник" />
+      <button id="loginBtn" class="small">Войти</button>
+      <button id="guestBtn" class="small">Гость</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="slots-section">
+      <div class="slots-header">
+        <div class="balance-block">Баланс: <span id="balance">0</span> ₽</div>
+        <div class="jackpot-block">Джекпот: <span id="jackpot">0</span> ₽</div>
+      </div>
+
+      <div class="slots-grid" id="slotsGrid">
+        <!-- Three slot machines -->
+        <div class="slotbox" data-slot="1">
+          <div class="slot-title">Слот №1</div>
+          <div class="machine vertical">
+            <div class="reel" id="s1r1">🍒</div>
+            <div class="reel" id="s1r2">🍋</div>
+            <div class="reel" id="s1r3">🍉</div>
+          </div>
+        </div>
+
+        <div class="slotbox" data-slot="2">
+          <div class="slot-title">Слот №2</div>
+          <div class="machine vertical">
+            <div class="reel" id="s2r1">⭐</div>
+            <div class="reel" id="s2r2">🍒</div>
+            <div class="reel" id="s2r3">🍋</div>
+          </div>
+        </div>
+
+        <div class="slotbox" data-slot="3">
+          <div class="slot-title">Слот №3</div>
+          <div class="machine vertical">
+            <div class="reel" id="s3r1">🍊</div>
+            <div class="reel" id="s3r2">🍉</div>
+            <div class="reel" id="s3r3">😊</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="bet-wrap">
+          <label>Ставка на все слоты (₽)</label>
+          <input id="bet" type="number" value="100" min="1" />
+          <button class="quick" data-v="50">50</button>
+          <button class="quick" data-v="100">100</button>
+          <button class="quick" data-v="500">500</button>
+        </div>
+        <button id="spinAllBtn" class="spin">КРУТИТЬ ВСЕ</button>
+        <button id="bonusBtn" class="bonus">Получить пополнение</button>
+      </div>
+
+      <div class="message" id="message"></div>
+
+    </section>
+
+    <aside class="rightpanel">
+      <div class="panel neon">
+        <h3>Бинго / Джекпоты</h3>
+        <div>Большой: <span id="bigjack">5000</span> ₽</div>
+        <div>Малый: <span id="smalljack">1000</span> ₽</div>
+        <hr/>
+        <h4>История</h4>
+        <div id="history" class="history"></div>
+        <hr/>
+        <div class="admin-hint">Админ: открой <code>admin.html</code> в другой вкладке</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">Demo — не используйте реальные деньги</footer>
+</div>
+
+<!-- Sounds embedded as small base64 WAV (short beeps) -->
+<audio id="spinSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA"></audio>
+<audio id="tickSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA"></audio>
+<audio id="winSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA"></audio>
+<audio id="bgMusic" loop src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>

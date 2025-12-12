@@ -1,0 +1,48 @@
+
+:root{
+  --bg:#040014; --panel:rgba(255,255,255,0.03);
+  --neon1:#ff6ec7; --neon2:#7b2cff; --neon3:#00f0ff; --accent:#ffd86b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial;background:radial-gradient(circle at 10% 10%, #0b0020 0%, var(--bg) 30%), #000;color:#fff;min-height:100vh}
+.wrap{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.brand{font-weight:900;font-size:26px;background:linear-gradient(90deg,var(--neon1),var(--neon2),var(--neon3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 20px rgba(123,44,255,0.08)}
+.topbar .controls-right{display:flex;gap:8px;align-items:center}
+.topbar input{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+
+.main{display:flex;gap:20px;padding:20px;flex:1}
+.slots-section{flex:1}
+.slots-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.balance-block,.jackpot-block{font-weight:700;font-size:18px}
+.slots-grid{display:flex;gap:18px;justify-content:center;margin-bottom:12px}
+.slotbox{width:220px;padding:12px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 40px rgba(123,44,255,0.06);position:relative;overflow:hidden}
+.slot-title{font-weight:700;margin-bottom:8px;background:linear-gradient(90deg,var(--neon2),var(--neon1));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.machine{height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;overflow:hidden}
+.reel{width:160px;height:36px;border-radius:8px;background:linear-gradient(90deg,#0b0b10,#12111a);display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,0.04);transition:transform .12s,box-shadow .12s}
+.vertical .reel{height:42px}
+
+.actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
+.bet-wrap{display:flex;gap:8px;align-items:center}
+.bet-wrap input{width:100px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+.quick{padding:8px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--accent),var(--neon1));cursor:pointer;color:#000;font-weight:700}
+.spin{padding:14px 28px;border-radius:14px;border:none;background:linear-gradient(90deg,var(--neon1),var(--neon2));font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 12px 34px rgba(123,44,255,0.18)}
+.bonus{padding:8px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,#7bffda,#ffd86b);font-weight:700;cursor:pointer}
+
+.rightpanel{width:320px}
+.panel{padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.04)}
+.neon{box-shadow:0 0 30px rgba(123,44,255,0.06)}
+
+.message{margin-top:8px;color:var(--accent);font-weight:700;text-align:center}
+
+.history{max-height:300px;overflow:auto;margin-top:8px;font-size:14px}
+
+/* neon glow effect when active */
+.slotbox.active{box-shadow:0 0 45px rgba(255,0,200,0.28), inset 0 0 30px rgba(255,255,255,0.02);transform:translateY(-4px);}
+
+/* spin down animation */
+@keyframes spinDown{0%{transform:translateY(-40px);opacity:0}50%{transform:translateY(10px);opacity:0.6}100%{transform:translateY(0);opacity:1}}
+.spin-anim{animation:spinDown .9s steps(8) both}
+
+/* responsive */
+@media(max-width:900px){.main{flex-direction:column}.rightpanel{width:100%}.slots-grid{flex-direction:column;align-items:center}}

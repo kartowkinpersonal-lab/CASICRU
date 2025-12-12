@@ -1,0 +1,118 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — CasinoRu</title>
+<link rel="stylesheet" href="styles.css"></head><body>
+<div style="max-width:900px;margin:20px auto;padding:18px">
+  <h1>Admin Panel — CasinoRu</h1>
+  <p>Пароль: <b>admin123</b></p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <input id="adminPass" type="password" placeholder="пароль"/>
+    <button id="adminLogin">Войти</button>
+    <button id="exportBtn">Экспорт users.json</button>
+    <input id="importFile" type="file" style="display:none"/>
+    <button id="importBtn">Импорт users.json</button>
+  </div>
+
+  <div id="adminArea" style="display:none;margin-top:12px">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input id="targetUser" placeholder="имя игрока"/><input id="amount" type="number" placeholder="сумма"/>
+      <button id="addFunds">Добавить</button>
+      <button id="setBalance">Установить баланс</button>
+      <button id="banUser">Забанить</button>
+      <button id="unbanUser">Разбанить</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input id="jackAmount" type="number" placeholder="5000"/><button id="setJack">Установить джекпот</button>
+    </div>
+
+    <div style="margin-top:10px">
+      <h3>Список пользователей</h3>
+      <div id="usersList" style="max-height:300px;overflow:auto;border:1px solid rgba(255,255,255,0.04);padding:8px"></div>
+    </div>
+  </div>
+
+  <div id="status" style="margin-top:8px;color:#ffd86b"></div>
+</div>
+
+<script>
+const ADMIN_PASS = 'admin123';
+document.getElementById('adminLogin').addEventListener('click', ()=>{
+  if(document.getElementById('adminPass').value === ADMIN_PASS){
+    document.getElementById('adminArea').style.display = 'block';
+    loadUsersList();
+    document.getElementById('status').textContent = 'Вошёл админ';
+  } else document.getElementById('status').textContent = 'Неверный пароль';
+});
+
+function postToIndex(action, data){
+  // send to all open windows via postMessage; index.html listens and will apply
+  const payload = Object.assign({origin:'casinoru_admin', action: action}, data);
+  try{ window.opener && window.opener.postMessage(payload, '*'); }
+  catch(e){}
+  try{ window.parent && window.parent.postMessage(payload, '*'); }
+  catch(e){}
+  // also try to write to localStorage directly (works if same origin)
+  if(action === 'addFunds' || action === 'setBalance' || action === 'banUser' || action === 'unbanUser'){
+    // update localStorage copy to be safe
+    const key = 'casinoru_users_v3';
+    const users = JSON.parse(localStorage.getItem(key) || '{}');
+    const u = users[data.user] || {balance:1000,history:[]};
+    if(action === 'addFunds'){ u.balance = (u.balance || 0) + Number(data.amount||0); u.history = u.history || []; u.history.push(new Date().toLocaleString() + ' Админ +'+data.amount+'₽'); }
+    if(action === 'setBalance'){ u.balance = Number(data.amount||0); }
+    if(action === 'banUser'){ u.banned = true; }
+    if(action === 'unbanUser'){ u.banned = false; }
+    users[data.user] = u;
+    localStorage.setItem(key, JSON.stringify(users));
+    loadUsersList();
+  }
+  if(action === 'setJackpot'){ localStorage.setItem('casinoru_jackpot', Number(data.amount||0)); }
+  document.getElementById('status').textContent = 'Отправлено: ' + action;
+}
+
+document.getElementById('addFunds').addEventListener('click', ()=>{
+  const user = document.getElementById('targetUser').value.trim(); const amount = Number(document.getElementById('amount').value||0);
+  if(!user || !amount){ document.getElementById('status').textContent='Заполните поля'; return; }
+  postToIndex('addFunds',{user,amount});
+});
+
+document.getElementById('setBalance').addEventListener('click', ()=>{
+  const user = document.getElementById('targetUser').value.trim(); const amount = Number(document.getElementById('amount').value||0);
+  if(!user){ document.getElementById('status').textContent='Введите user'; return; }
+  postToIndex('setBalance',{user,amount});
+});
+
+document.getElementById('banUser').addEventListener('click', ()=>{
+  const user = document.getElementById('targetUser').value.trim(); if(!user){ document.getElementById('status').textContent='Введите user'; return; }
+  postToIndex('banUser',{user});
+});
+document.getElementById('unbanUser').addEventListener('click', ()=>{
+  const user = document.getElementById('targetUser').value.trim(); if(!user){ document.getElementById('status').textContent='Введите user'; return; }
+  postToIndex('unbanUser',{user});
+});
+
+document.getElementById('setJack').addEventListener('click', ()=>{
+  const amount = Number(document.getElementById('jackAmount').value||0);
+  postToIndex('setJackpot',{amount});
+  document.getElementById('status').textContent = 'Джекпот установлен';
+});
+
+function loadUsersList(){
+  const key='casinoru_users_v3'; const users = JSON.parse(localStorage.getItem(key) || '{}'); const el = document.getElementById('usersList'); el.innerHTML='';
+  Object.keys(users).forEach(k=>{ const u = users[k]; const div = document.createElement('div'); div.style.padding='6px'; div.style.borderBottom='1px solid rgba(255,255,255,0.03)'; div.textContent = k + ' — ' + (u.balance||0) + ' ₽' + (u.banned? ' (banned)':''); el.appendChild(div); });
+}
+
+// export/import
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const key='casinoru_users_v3'; const users = localStorage.getItem(key) || '{}'; const blob = new Blob([users],{type:'application/json'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download='users.json'; a.click(); URL.revokeObjectURL(url);
+});
+
+document.getElementById('importBtn').addEventListener('click', ()=> document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+  r.onload = function(){ try{ JSON.parse(r.result); localStorage.setItem('casinoru_users_v3', r.result); loadUsersList(); document.getElementById('status').textContent='Импорт выполнен'; }catch(e){ document.getElementById('status').textContent='Ошибка JSON'; } };
+  r.readAsText(f);
+});
+
+// initial load list
+loadUsersList();
+</script>
+</body></html>
